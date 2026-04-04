@@ -1502,6 +1502,9 @@ if __name__ == '__main__':
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     os.makedirs(os.path.join(app.root_path, 'static', 'profile_pics'), exist_ok=True)
     os.makedirs(os.path.join(app.root_path, 'static', 'portfolio_img'), exist_ok=True)
-    os.makedirs(os.path.join(app.root_path, 'static', 'portfolio_assets'), exist_ok=True) 
+    os.makedirs(os.path.join(app.root_path, 'static', 'portfolio_assets'), exist_ok=True)
+
     print(f"Ensured upload folder exists at: {app.config['UPLOAD_FOLDER']}")
-    app.run(debug=True)
+
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
