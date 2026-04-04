@@ -1,6 +1,12 @@
 Flask
 gunicorn
-Flask-SQLAlchemy
-Flask-Login
-Werkzeug
-Pillow
+pymongo
+flask-bcrypt
+flask-login
+flask-mail
+itsdangerous
+python-dotenv
+markupsafe
+regex
+beautifulsoup4
+werkzeug
