@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Portfolio Builder - SkillBridge</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; background-color: #f0f2f5; }
+        #gallery-container { text-align: center; padding: 20px; }
+        .template-thumb { width: 250px; margin: 10px; cursor: pointer; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        .template-thumb:hover { transform: scale(1.05); }
+
+        #editor-page { display: none; height: 100vh; position: relative; }
+        #live-preview-iframe { width: 100%; height: 100%; border: none; background: white; }
+
+        .editor-controls { position: absolute; top: 20px; right: 20px; background-color: rgba(12, 12, 29, 0.8); backdrop-filter: blur(5px); padding: 10px; border-radius: 8px; display: flex; gap: 10px; z-index: 100; }
+        .editor-controls button { padding: 10px 20px; font-size: 16px; cursor: pointer; border: none; border-radius: 6px; background-color: #00f5c3; color: #0c0c1d; font-weight: bold; }
+        
+        /* This class is added by JS to make images editable */
+        .editable-image { cursor: pointer; transition: filter 0.2s ease-in-out; }
+        .editable-image:hover { filter: brightness(0.8) contrast(1.1); outline: 3px dashed #00f5c3; }
+    </style>
+</head>
+<body>
+
+    <main id="gallery-container"></main>
+
+    <section id="editor-page">
+        <iframe id="live-preview-iframe"></iframe>
+        <div class="editor-controls">
+            <button id="download-btn">✓ Save Template</button>
+            <button id="back-to-gallery-btn-from-editor">← Back to Gallery</button>
+        </div>
+    </section>
+
+    <script>
+    const galleryContainer = document.getElementById('gallery-container');
+    const editorPage = document.getElementById('editor-page');
+    const backToGalleryBtn = document.getElementById('back-to-gallery-btn-from-editor');
+    const downloadBtn = document.getElementById('download-btn');
+    const livePreviewIframe = document.getElementById('live-preview-iframe');
+
+    let selectedTemplateId = null;
+    let templateDataCache = null;
+
+    async function showGallery() {
+        const response = await fetch('/api/templates');
+        const templates = await response.json();
+        galleryContainer.innerHTML = '<h2>Choose a Template to Edit</h2>';
+        templates.forEach(template => {
+            const img = document.createElement('img');
+            img.className = 'template-thumb';
+            img.src = template.thumbnail;
+            img.alt = template.name;
+            img.onclick = () => loadEditor(template.id);
+            galleryContainer.appendChild(img);
+        });
+        galleryContainer.style.display = 'block';
+        editorPage.style.display = 'none';
+    }
+
+    async function loadEditor(templateId) {
+        selectedTemplateId = templateId;
+        const response = await fetch(`/api/template/${templateId}`);
+        templateDataCache = await response.json();
+        
+        livePreviewIframe.srcdoc = templateDataCache.htmlContent;
+
+        livePreviewIframe.onload = () => {
+            populateIframeWithContent(livePreviewIframe, templateDataCache, true);
+        };
+        
+        galleryContainer.style.display = 'none';
+        editorPage.style.display = 'block';
+    }
+    
+    function populateIframeWithContent(iframe, data, makeEditable) {
+        const iframeDoc = iframe.contentDocument;
+        if (!iframeDoc || !data) return;
+
+        if (data.config && data.config.fields) {
+            data.config.fields.forEach(field => {
+                const element = iframeDoc.querySelector(`[data-binding="${field.id}"]`);
+                if (element) {
+                    const attr = field.targetAttribute || 'innerText';
+                    if (attr === 'innerText') element.innerText = field.defaultValue;
+                    else if (attr === 'innerHTML') element.innerHTML = field.defaultValue.split('\n').map(p => `<p>${p}</p>`).join('');
+                    else element.setAttribute(attr, field.defaultValue);
+                }
+            });
+        }
+        
+        if (data.listData) {
+            if (data.listData.projects && data.listData.projects.length > 0) {
+                const projContainer = iframeDoc.querySelector('[data-container="projects"]');
+                if (projContainer) projContainer.innerHTML = data.listData.projects.map(proj => `<div class="project-card content-item"><h3>${proj.title}</h3><p>${proj.description}</p><div class="project-tech-tags">${(proj.skills_needed || []).map(tag => `<span class="tech-tag">${tag}</span>`).join('')}</div></div>`).join('');
+            }
+        }
+
+        if (makeEditable) {
+            const editableTexts = iframeDoc.querySelectorAll('[contenteditable="true"]');
+            editableTexts.forEach(el => {
+                el.style.outline = "2px dashed rgba(0, 245, 195, 0)";
+                el.addEventListener('mouseover', () => el.style.outlineColor = "rgba(0, 245, 195, 0.5)");
+                el.addEventListener('mouseout', () => el.style.outlineColor = "rgba(0, 245, 195, 0)");
+            });
+
+            const editableImages = iframeDoc.querySelectorAll('img[data-binding]');
+            editableImages.forEach(img => {
+                img.classList.add('editable-image');
+                img.addEventListener('click', () => {
+                    const fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.accept = 'image/*';
+                    fileInput.onchange = () => {
+                        if (fileInput.files && fileInput.files[0]) {
+                            const reader = new FileReader();
+                            reader.onload = (e) => { img.src = e.target.result; };
+                            reader.readAsDataURL(fileInput.files[0]);
+                        }
+                    };
+                    fileInput.click();
+                });
+            });
+        }
+    }
+
+    function downloadEditedTemplate() {
+        const iframeDoc = livePreviewIframe.contentDocument;
+        if (!iframeDoc) return;
+
+        const cloneDoc = iframeDoc.cloneNode(true);
+
+        cloneDoc.querySelectorAll('[contenteditable="true"]').forEach(el => {
+            el.removeAttribute('contenteditable');
+            el.style.outline = 'none';
+        });
+        cloneDoc.querySelectorAll('.editable-image').forEach(img => {
+            img.classList.remove('editable-image');
+        });
+
+        cloneDoc.querySelectorAll('script').forEach(script => script.remove());
+        
+        const finalHtml = new XMLSerializer().serializeToString(cloneDoc);
+        const blob = new Blob([finalHtml], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${selectedTemplateId}_portfolio.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    downloadBtn.onclick = downloadEditedTemplate;
+    backToGalleryBtn.onclick = showGallery;
+
+    showGallery();
+    </script>
+</body>
+</html>

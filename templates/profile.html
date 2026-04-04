@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile Architecture | SkillBridge</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root {
+  --bg: #f5f6fb;
+  --surface: #ffffff;
+  --primary: #8B5CF6;   /* Purple */
+  --secondary: #EC4899; /* Pink */
+  --text-main: #0f172a;
+  --text-dim: #64748b;
+  --border: #e5e7eb;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: var(--bg);
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+.dashboard-container { display: flex; }
+
+/* ---------- SIDEBAR ---------- */
+.sidebar {
+  width: 260px; background: var(--surface); border-right: 1px solid var(--border);
+  padding: 2.5rem 1.5rem; position: fixed; height: 100vh; z-index: 100;
+}
+.sidebar .logo {
+  font-size: 1.8rem; font-weight: 800; background: linear-gradient(90deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 3rem; display: block; text-decoration: none;
+}
+.sidebar a {
+  display: flex; align-items: center; gap: 12px; padding: .8rem 1rem; border-radius: 12px;
+  color: var(--text-dim); text-decoration: none; margin-bottom: .5rem; font-size: 0.9rem; font-weight: 600; transition: 0.2s;
+}
+.sidebar a:hover { background: #f1f5f9; color: var(--primary); }
+.sidebar a.active { background: linear-gradient(90deg, var(--primary), var(--secondary)); color: #fff; }
+
+/* ---------- MAIN CONTENT ---------- */
+.main-content { margin-left: 260px; padding: 4rem; width: calc(100% - 260px); }
+.profile-grid { display: grid; grid-template-columns: 420px 1fr; gap: 3rem; align-items: start; }
+
+/* ---------- THE PREVIEW RECTANGLE (LEFT) ---------- */
+.preview-card {
+  background: var(--surface); border-radius: 24px; padding: 2.5rem; position: sticky; top: 2rem;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.05); text-align: center; border: 1px solid var(--border);
+}
+.profile-pic { width: 110px; height: 110px; border-radius: 25px; object-fit: cover; border: 4px solid #fff; box-shadow: 0 10px 20px rgba(0,0,0,0.1); margin-bottom: 1rem; }
+.preview-card h2 { font-size: 1.4rem; font-weight: 800; color: var(--text-main); }
+.preview-title { color: var(--primary); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 10px; display: block; }
+
+.social-preview-row { display: flex; justify-content: center; gap: 12px; margin: 1rem 0; }
+.social-icon-link { text-decoration: none; transition: 0.3s; cursor: default; }
+.social-icon-link.active-link { cursor: pointer; }
+.social-icon { font-size: 1.25rem; color: #cbd5e1; transition: 0.3s; }
+.social-icon-link.active-link .social-icon { color: var(--primary); transform: scale(1.1); }
+
+.preview-data-list { text-align: left; margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem; }
+.data-item { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.8rem; }
+.data-item label { color: var(--text-dim); font-weight: 600; text-transform: uppercase; font-size: 0.65rem; }
+.data-item span { color: var(--text-main); font-weight: 700; }
+
+/* Dynamic Tags Styling */
+.preview-skills { text-align: left; margin-top: 1.5rem; }
+.preview-skills label { font-size: 0.65rem; color: var(--text-dim); font-weight: 800; text-transform: uppercase; display: block; margin-bottom: 8px; }
+.tag-box { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 15px; }
+.tag { background: #f1f5f9; padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 600; color: var(--text-main); }
+.tag.learning { background: rgba(236, 72, 153, 0.1); color: var(--secondary); }
+
+.view-my-profile-btn {
+    display: block; width: 100%; margin-top: 1rem; padding: 12px; border-radius: 12px;
+    background: #f8fafc; border: 1.5px solid var(--border); color: var(--text-main);
+    text-decoration: none; font-weight: 700; font-size: 0.85rem; transition: 0.3s;
+}
+.view-my-profile-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+/* ---------- FORM (RIGHT) ---------- */
+.form-card { background: var(--surface); border-radius: 24px; padding: 3.5rem; border: 1px solid var(--border); }
+.form-section { margin-bottom: 3.5rem; }
+.section-title { font-size: 1.2rem; font-weight: 800; color: var(--text-main); margin-bottom: 2rem; display: flex; align-items: center; gap: 15px; }
+.section-title span { width: 35px; height: 4px; background: var(--primary); border-radius: 10px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.full { grid-column: span 2; }
+
+label { font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; display: block; color: var(--text-main); }
+input, textarea, select { width: 100%; background: #f8fafc; border: 1.5px solid var(--border); border-radius: 12px; padding: 14px; font-family: inherit; }
+
+.update-btn {
+    width: 100%; padding: 18px; border-radius: 14px; border: none; font-weight: 800; cursor: pointer;
+    background: linear-gradient(90deg, var(--primary), var(--secondary)); color: #fff; transition: 0.3s;
+}
+.update-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3); }
+
+@media (max-width: 1100px) { .profile-grid { grid-template-columns: 1fr; } .main-content { margin-left: 0; } .sidebar { display: none; } }
+</style>
+</head>
+
+<body>
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <a href="{{ url_for('main_page') }}" class="logo">SkillBridge</a>
+        <a href="{{ url_for('main_page') }}"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a href="{{ url_for('profile') }}" class="active"><i class="fas fa-user-circle"></i> My Profile</a>
+        <a href="{{ url_for('projects') }}"><i class="fas fa-globe"></i> Community</a>
+    </aside>
+
+    <main class="main-content">
+        <div class="profile-grid">
+            
+            <div class="preview-card">
+                <img class="profile-pic" src="{{ user.profile_pic_url or url_for('static', filename='profile_pics/default.jpg') }}">
+                <h2 id="p-name">{{ user.name or "Your Name" }}</h2>
+                <span class="preview-title" id="p-title">{{ user.title or "Professional Title" }}</span>
+
+                <div class="social-preview-row">
+                    <a id="link-linkedin" target="_blank" class="social-icon-link"><i class="fab fa-linkedin social-icon" id="ic-linkedin"></i></a>
+                    <a id="link-github" target="_blank" class="social-icon-link"><i class="fab fa-github social-icon" id="ic-github"></i></a>
+                    <a id="link-instagram" target="_blank" class="social-icon-link"><i class="fab fa-instagram social-icon" id="ic-instagram"></i></a>
+                    <a id="link-facebook" target="_blank" class="social-icon-link"><i class="fab fa-facebook social-icon" id="ic-facebook"></i></a>
+                </div>
+
+                <div class="preview-data-list">
+                    <div class="data-item"><label>Status</label><span id="p-status">{{ user.current_status or "Not Set" }}</span></div>
+                    <div class="data-item"><label>Experience</label><span id="p-exp">{{ user.experience_years or "0" }} Years</span></div>
+                    <div class="data-item"><label>Location</label><span id="p-loc">{{ user.location or "Remote" }}</span></div>
+                </div>
+
+                <div class="preview-skills">
+                    <label>Mastered Stack</label>
+                    <div class="tag-box" id="p-known"></div>
+                    
+                    <label>Learning Goals</label>
+                    <div class="tag-box" id="p-learning"></div>
+                </div>
+
+                <a href="{{ url_for('view_user_profile', user_id=current_user.id) }}" class="view-my-profile-btn">
+                    <i class="fas fa-eye" style="margin-right: 8px;"></i> View My Public Profile
+                </a>
+            </div>
+
+            <div class="form-card">
+                <form action="{{ url_for('profile') }}" method="POST" enctype="multipart/form-data">
+                    
+                    <div class="form-section">
+                        <div class="section-title"><span></span> Core Identity</div>
+                        <div class="form-grid">
+                            <div><label>Full Name</label><input type="text" name="name" id="in-name" value="{{ user.name }}" onkeyup="sync()"></div>
+                            <div><label>Job Title</label><input type="text" name="title" id="in-title" value="{{ user.title }}" onkeyup="sync()"></div>
+                            <div class="full"><label>Bio</label><textarea name="about_me" id="in-bio" rows="2" onkeyup="sync()">{{ user.about_me }}</textarea></div>
+                            <div><label>Location</label><input type="text" name="location" id="in-loc" value="{{ user.location }}" onkeyup="sync()"></div>
+                            <div><label>Profile Image</label><input type="file" name="profile_pic"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title"><span></span> Mastery & Learning</div>
+                        <div class="form-grid">
+                            <div class="full">
+                                <label>Skills You Know (comma separated)</label>
+                                <textarea name="known_skills" id="in-known" rows="2" placeholder="Python, Flask, CSS..." onkeyup="sync()">{{ user.known_skills_str }}</textarea>
+                            </div>
+                            <div class="full">
+                                <label>Skills You Want to Know (comma separated)</label>
+                                <textarea name="learning_skills" id="in-learning" rows="2" placeholder="AI, Docker, React..." onkeyup="sync()">{{ user.learning_skills_str }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title"><span></span> Career Parameters</div>
+                        <div class="form-grid">
+                            <div><label>Exp (Years)</label><input type="number" name="experience_years" id="in-exp" value="{{ user.experience_years }}" onkeyup="sync()"></div>
+                            <div><label>University</label><input type="text" name="education_college" id="in-college" value="{{ user.education_college }}" onkeyup="sync()"></div>
+                            <div class="full"><label>Current Status</label>
+                                <select name="current_status" id="in-status" onchange="sync()">
+                                    <option value="Student" {% if user.current_status == 'Student' %}selected{% endif %}>Student</option>
+                                    <option value="Working" {% if user.current_status == 'Working' %}selected{% endif %}>Working Professional</option>
+                                    <option value="Fresher" {% if user.current_status == 'Fresher' %}selected{% endif %}>Fresher</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <div class="section-title"><span></span> Social Links</div>
+                        <div class="form-grid">
+                            <div><label>LinkedIn URL</label><input type="url" name="linkedin_url" id="in-linkedin" value="{{ user.linkedin_url }}" onkeyup="sync()"></div>
+                            <div><label>GitHub URL</label><input type="url" name="github_url" id="in-github" value="{{ user.github_url }}" onkeyup="sync()"></div>
+                            <div><label>Instagram URL</label><input type="url" name="instagram_url" id="in-instagram" value="{{ user.instagram_url }}" onkeyup="sync()"></div>
+                            <div><label>Facebook URL</label><input type="url" name="facebook_url" id="in-facebook" value="{{ user.facebook_url }}" onkeyup="sync()"></div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="update-btn">Commit Architecture & Update</button>
+                </form>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script>
+function sync() {
+    // 1. Text Fields
+    document.getElementById('p-name').innerText = document.getElementById('in-name').value || "Your Name";
+    document.getElementById('p-title').innerText = document.getElementById('in-title').value || "Professional Title";
+    document.getElementById('p-status').innerText = document.getElementById('in-status').value;
+    document.getElementById('p-exp').innerText = (document.getElementById('in-exp').value || "0") + " Years";
+    document.getElementById('p-loc').innerText = document.getElementById('in-loc').value || "Remote";
+
+    // 2. Social Links
+    ['linkedin', 'github', 'instagram', 'facebook'].forEach(s => {
+        const val = document.getElementById('in-' + s).value.trim();
+        const icon = document.getElementById('ic-' + s);
+        const link = document.getElementById('link-' + s);
+        if(val) { link.href = val; link.classList.add('active-link'); icon.classList.add('active'); }
+        else { link.href = "javascript:void(0)"; link.classList.remove('active-link'); icon.classList.remove('active'); }
+    });
+
+    // 3. Dynamic Skill Tags
+    updateTagContainer('p-known', document.getElementById('in-known').value, false);
+    updateTagContainer('p-learning', document.getElementById('in-learning').value, true);
+}
+
+function updateTagContainer(id, value, isPink) {
+    const container = document.getElementById(id);
+    container.innerHTML = '';
+    const items = value.split(',').filter(item => item.trim() !== "");
+    items.forEach(item => {
+        const span = document.createElement('span');
+        span.className = isPink ? 'tag learning' : 'tag';
+        span.innerText = item.trim();
+        container.appendChild(span);
+    });
+}
+
+// Load data into preview on first open
+window.onload = sync;
+</script>
+</body>
+</html>

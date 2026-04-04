@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Builder - SkillBridge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --color-background: #111015; --color-surface: rgba(30, 30, 40, 0.6); --color-primary: #6D28D9; --color-secondary: #818CF8; --color-text-primary: #F3F4F6; --color-text-secondary: #9CA3AF; --border-radius: 12px; }
+        body{font-family:'Poppins',sans-serif;background-color:var(--color-background);color:var(--color-text-primary);margin:0}
+        .dashboard-container{display:flex}
+        .sidebar{width:250px;background:var(--color-surface);backdrop-filter:blur(10px);border-right:1px solid rgba(255,255,255,.1);height:100vh;padding:2rem 1.5rem;position:fixed;box-sizing:border-box}
+        .main-content{margin-left:250px;padding:2rem 3rem;width:calc(100% - 250px);box-sizing:border-box}
+        h1{font-size:2.5em;font-weight:600;}
+        p{color:var(--color-text-secondary);line-height:1.6;}
+        
+        /* New Styles for Resume Builder */
+        .resume-builder-layout { display: flex; gap: 2rem; }
+        .resume-controls { flex: 0 0 300px; }
+        .resume-preview-container { flex-grow: 1; }
+        
+        .control-panel { background: var(--color-surface); border-radius: var(--border-radius); padding: 1.5rem; }
+        .control-panel h3 { margin-top: 0; }
+        .cta-button{background:linear-gradient(90deg,var(--color-primary),var(--color-secondary));color:#fff;padding:12px 24px;border:none;border-radius:8px;font-weight:600;cursor:pointer;transition:all .2s;font-size:1em;text-decoration:none;display:inline-block; width: 100%; text-align:center; box-sizing: border-box;}
+        .cta-button:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(109,40,217,.25)}
+        .cta-button.disabled { background: #555; cursor: not-allowed; }
+
+        /* Resume Preview Styling */
+        .resume-preview {
+            background-color: #fff;
+            color: #111;
+            padding: 2.5rem;
+            max-width: 800px;
+            margin: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .resume-header { text-align: center; border-bottom: 2px solid #eee; padding-bottom: 1rem; }
+        .resume-header h2 { margin: 0; color: #111; font-size: 2.2em; }
+        .resume-header p { margin: 0.25rem 0; color: #555; font-size: 0.9em; }
+        .resume-section { margin-top: 1.5rem; }
+        .resume-section h3 { font-size: 1.2em; color: var(--color-primary); border-bottom: 2px solid var(--color-primary); padding-bottom: 0.25rem; margin-bottom: 1rem; }
+        .skills-list { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .skills-list li { background-color: #eee; padding: 5px 12px; border-radius: 15px; font-size: 0.9em; }
+        .project-item { margin-bottom: 1rem; }
+        .project-item h4 { margin: 0; color: #333; }
+        .project-item p { margin: 0.25rem 0 0 0; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            </aside>
+
+        <main class="main-content">
+            <h1>AI Resume Builder</h1>
+            <p>Generate a professional resume from your SkillBridge profile and projects.</p>
+
+            <div class="resume-builder-layout">
+                <div class="resume-controls">
+                    <div class="control-panel">
+                        <h3>Controls</h3>
+                        <p>Options to customize your resume will appear here.</p>
+                        <button class="cta-button disabled">Download PDF (Coming Soon)</button>
+                    </div>
+                </div>
+
+                <div class="resume-preview-container">
+                    <div class="resume-preview">
+                        <div class="resume-header">
+                            <h2>{{ user.name }}</h2>
+                            <p>{{ user.email }} | {{ user.linkedin_url }} | {{ user.github_url }}</p>
+                        </div>
+
+                        <div class="resume-section">
+                            <h3>Skills</h3>
+                            <ul class="skills-list">
+                                {% for skill in user.known_skills %}
+                                    {% if skill %}<li>{{ skill }}</li>{% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <div class="resume-section">
+                            <h3>Projects</h3>
+                            {% for project in projects %}
+                            <div class="project-item">
+                                <h4>{{ project.title }}</h4>
+                                <p>{{ project.description }}</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
