@@ -51,12 +51,16 @@ app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_USERNAME')
 mail = Mail(app)
 
 # --- Database Connection ---
+# --- Database Connection ---
 try:
-    mongo_uri = "mongodb://127.0.0.1:27017/skillbridge_db"
+    mongo_uri = os.getenv("MONGO_URI")
     client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
-    db = client.get_database()
-    client.admin.command('ismaster')
-    print(f"MongoDB connection successful.")
+
+    # Explicit database name
+    db = client["skillbridge_db"]
+
+    client.admin.command('ping')
+    print("MongoDB connection successful.")
 
     users_collection = db['users']
     roadmaps_collection = db['roadmaps']
