@@ -10,3 +10,4 @@ markupsafe
 regex
 beautifulsoup4
 werkzeug
+google
